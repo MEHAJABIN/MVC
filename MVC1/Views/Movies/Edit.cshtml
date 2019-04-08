@@ -1,0 +1,102 @@
+﻿@model MVC1.Models.Movie
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Movie</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReleaseDate" class="control-label"></label>
+                <input asp-for="ReleaseDate" class="form-control" />
+                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Genre" class="control-label"></label>
+                <input asp-for="Genre" class="form-control" />
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+// GET: Movies/Edit/5
+public async Task<IActionResult>
+    Edit(int? id)
+    {
+    if (id == null)
+    {
+    return NotFound();
+    }
+
+    var movie = await _context.Movie.FindAsync(id);
+    if (movie == null)
+    {
+    return NotFound();
+    }
+    return View(movie);
+    }
+    // POST: Movies/Edit/5
+    // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+    // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult>
+    Edit(int id, [Bind("ID,Title,ReleaseDate,Genre,Price")] Movie movie)
+    {
+    if (id != movie.ID)
+    {
+    return NotFound();
+    }
+
+    if (ModelState.IsValid)
+    {
+    try
+    {
+    _context.Update(movie);
+    await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+    if (!MovieExists(movie.ID))
+    {
+    return NotFound();
+    }
+    else
+    {
+    throw;
+    }
+    }
+    return RedirectToAction("Index");
+    }
+    return View(movie);
+    }
+    
